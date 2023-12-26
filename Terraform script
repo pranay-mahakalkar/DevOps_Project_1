@@ -1,0 +1,29 @@
+provider "aws" {
+  # Configuration options
+  region = "ap-south-1"
+}
+variable "instance_types" {
+  type    = list(string)
+  default = ["t2.micro"] # Replace with your desired instance types
+}
+
+resource "aws_instance" "example" {
+  count         = 2
+  ami           = "your AWS AMI ID" # Replace with your desired AMI ID
+  instance_type = element(var.instance_types, count.index)
+  key_name      = "Keyname" # Replace with your key name
+
+  tags = {
+    Name = "Instance-${count.index + 1}"
+  }
+}
+
+# Output the public IP addresses of the EC2 instances
+output "public_ips" {
+  value = aws_instance.example[*].public_ip
+}
+
+# Output the instance IDs of the EC2 instances
+output "instance_ids" {
+  value = aws_instance.example[*].id
+}
